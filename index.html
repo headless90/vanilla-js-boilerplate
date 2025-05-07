@@ -2,21 +2,19 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Магазин аксессуаров</title>
+  <title>Магазин</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body onload="loadProducts()">
   <h1>Магазин аксессуаров</h1>
-
-  <section id="categories"></section>
-  <section id="products" style="display: flex; flex-wrap: wrap; gap: 16px;"></section>
-
-  <hr />
-  <div id="cart" style="margin-top: 20px;"></div>
+  <div id="categories"></div>
+  <div id="products"></div>
+  <hr>
+  <div id="cart"></div>
   <button onclick="checkout()">Оформить заказ</button>
-
   <script src="script.js"></script>
+</body>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>
