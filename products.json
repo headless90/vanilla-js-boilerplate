@@ -1,0 +1,23 @@
+[
+  {
+    "id": "case1",
+    "name": "Чехол для iPhone 13",
+    "category": "Чехлы",
+    "price": 990,
+    "image": "https://via.placeholder.com/150x150?text=Чехол"
+  },
+  {
+    "id": "cable1",
+    "name": "Кабель USB-C",
+    "category": "Кабели",
+    "price": 490,
+    "image": "https://via.placeholder.com/150x150?text=Кабель"
+  },
+  {
+    "id": "glass1",
+    "name": "Стекло защитное",
+    "category": "Защита",
+    "price": 390,
+    "image": "https://via.placeholder.com/150x150?text=Стекло"
+  }
+]
