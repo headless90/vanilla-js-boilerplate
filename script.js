@@ -1,7 +1,7 @@
 let cart = [];
 
 async function loadProducts() {
-  const res = await fetch("https://opensheet.elk.sh/2PACX-1vS5bE9ljyhUyQ5OxoWwKYOrGomO5eT5Iq8FpfP8rLaSIj9BU2KmmJ9McryHlGHOxLmsOFWJk3DeguQt/Лист1");
+  const res = await fetch("https://opensheet.elk.sh/1TuSIMms3vP-RSDwvw8IHaZCqF2swffIKVM9woh0sBEY/Лист1");
   const products = await res.json();
 
   const categories = [...new Set(products.map(p => p.category))];
