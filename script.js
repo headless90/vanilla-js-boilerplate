@@ -63,6 +63,24 @@ function checkout() {
     return;
   }
 
+function checkout() {
+  const cartItems = cart.map(item => ({
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity
+  }));
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const data = {
+    items: cartItems,
+    total: total
+  };
+
+  // Отправка данных в Telegram
+  Telegram.WebApp.sendData(JSON.stringify(data));
+}
+  
   const orderText = cart.map(item => `${item.name} — ${item.qty} шт.`).join('\n');
   const totalPrice = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
 
