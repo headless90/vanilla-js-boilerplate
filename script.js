@@ -1,100 +1,65 @@
-let allProducts = [];
 let cart = [];
 
-window.onload = () => {
-  fetch('products.json')
-    .then(res => res.json())
-    .then(products => {
-      allProducts = products;
-      renderCategories(products);
-      renderProducts(products);
-      updateCartUI();
-    });
-};
+async function loadProducts() {
+  const res = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vS5bE9ljyhUyQ5OxoWwKYOrGomO5eT5Iq8FpfP8rLaSIj9BU2KmmJ9McryHlGHOxLmsOFWJk3DeguQt/pubhtml");
+  const products = await res.json();
 
-function renderCategories(products) {
   const categories = [...new Set(products.map(p => p.category))];
-  const container = document.getElementById('categories');
-  container.innerHTML = categories.map(cat => `
-    <button onclick="filterByCategory('${cat}')">${cat}</button>
-  `).join(' ') + `<button onclick="renderProducts(allProducts)">Все</button>`;
+
+  const categoriesDiv = document.getElementById("categories");
+  categoriesDiv.innerHTML = categories.map(cat => `<button onclick="showCategory('${cat}')">${cat}</button>`).join(" ");
+
+  window.allProducts = products;
+  showCategory(categories[0]);
 }
 
-function renderProducts(products) {
-  const container = document.getElementById('products');
-  container.innerHTML = products.map(p => `
+function showCategory(category) {
+  const products = window.allProducts.filter(p => p.category === category);
+
+  const productsDiv = document.getElementById("products");
+  productsDiv.innerHTML = products.map(p => `
     <div class="product">
-      <img src="${p.image}" alt="${p.name}" />
+      <img src="${p.photo}" alt="${p.name}" />
       <h3>${p.name}</h3>
-      <p>${p.price.toLocaleString()} ₽</p>
-      <button onclick="addToCart('${p.id}')">В корзину</button>
+      <p>${p.description}</p>
+      <b>${p.price} ₽</b><br>
+      <button onclick='addToCart(${JSON.stringify(p)})'>Добавить</button>
     </div>
-  `).join('');
+  `).join("");
 }
 
-function filterByCategory(category) {
-  const filtered = allProducts.filter(p => p.category === category);
-  renderProducts(filtered);
-}
-
-function addToCart(productId) {
-  const product = allProducts.find(p => p.id === productId);
-  const itemInCart = cart.find(item => item.id === productId);
-  if (itemInCart) {
-    itemInCart.qty += 1;
+function addToCart(product) {
+  const index = cart.findIndex(p => p.name === product.name);
+  if (index >= 0) {
+    cart[index].quantity += 1;
   } else {
-    cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+    cart.push({ ...product, quantity: 1 });
   }
-  updateCartUI();
+  renderCart();
 }
 
-function updateCartUI() {
-  const container = document.getElementById('cart');
-  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
-  container.innerHTML = `
-    <p>🛒 В корзине: ${totalQty} товаров на сумму ${totalPrice.toLocaleString()} ₽</p>
-  `;
-}
-
-function checkout() {
+function renderCart() {
+  const cartDiv = document.getElementById("cart");
   if (cart.length === 0) {
-    alert("Корзина пуста");
+    cartDiv.innerHTML = "<i>Корзина пуста</i>";
     return;
   }
 
+  cartDiv.innerHTML = cart.map(item => `
+    <div>
+      ${item.name} × ${item.quantity} — ${item.price * item.quantity} ₽
+    </div>
+  `).join("");
+
+  const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  cartDiv.innerHTML += `<hr><b>Итого: ${total} ₽</b>`;
+}
+
 function checkout() {
-  const cartItems = cart.map(item => ({
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity
-  }));
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+  const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const data = {
-    items: cartItems,
+    items: cart,
     total: total
   };
-
-  // Отправка данных в Telegram
   Telegram.WebApp.sendData(JSON.stringify(data));
-}
-  
-  const orderText = cart.map(item => `${item.name} — ${item.qty} шт.`).join('\n');
-  const totalPrice = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
-
-  const data = {
-    type: "order",
-    items: cart,
-    total: totalPrice,
-    text: orderText
-  };
-
-  // Отправка в Telegram через WebApp
-  if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.sendData(JSON.stringify(data));
-  } else {
-    alert("Это мини-приложение работает только в Telegram.");
-  }
 }
